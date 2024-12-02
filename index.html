@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPU vs GPU Speed Comparison</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #1e1e2f;
+            color: white;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .radio-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: #2e2e40;
+            padding: 15px;
+            border-radius: 10px;
+            width: 250px;
+        }
+        .radio-menu label {
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            text-align: left;
+        }
+        .cpu-faster {
+            background-color: green;
+        }
+        .gpu-faster {
+            background-color: red;
+        }
+        .radio-menu label:hover {
+            opacity: 0.8;
+        }
+        canvas {
+            border: 2px solid white;
+            margin-top: 20px;
+            position: relative;
+        }
+        .label {
+            position: absolute;
+            text-align: center;
+            width: 100%;
+            color: white;
+            font-size: 14px;
+            pointer-events: none;
+        }
+        .cpu-label {
+            top: 90px;
+        }
+        .gpu-label {
+            top: 290px;
+        }
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .controls input[type="range"] {
+            width: 300px;
+        }
+        .speed-label {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>CPU vs GPU Speed Comparison</h1>
+    <div class="container">
+        <div class="radio-menu">
+            <label class="cpu-faster">
+                <input type="radio" name="task" value="compute" checked> Rechnen (1.5x schneller)
+            </label>
+            <label class="gpu-faster">
+                <input type="radio" name="task" value="render"> 3D-Grafikrendering (2x schneller)
+            </label>
+            <label class="gpu-faster">
+                <input type="radio" name="task" value="machine-learning"> Machine Learning (10x schneller)
+            </label>
+            <label class="cpu-faster">
+                <input type="radio" name="task" value="video-encoding"> Video-Encoding (1.2x schneller)
+            </label>
+            <label class="cpu-faster">
+                <input type="radio" name="task" value="database"> Datenbankabfragen (1.8x schneller)
+            </label>
+            <label class="gpu-faster">
+                <input type="radio" name="task" value="gaming"> Video-Gaming (3x schneller)
+            </label>
+            <label class="cpu-faster">
+                <input type="radio" name="task" value="audio-processing"> Audioverarbeitung (1.3x schneller)
+            </label>
+            <label class="gpu-faster">
+                <input type="radio" name="task" value="cryptomining"> Kryptomining (5x schneller)
+            </label>
+            <label class="gpu-faster">
+                <input type="radio" name="task" value="simulation"> Simulationen (4x schneller)
+            </label>
+        </div>
+        
+        <div style="position: relative;">
+            <canvas id="canvas" width="800" height="400"></canvas>
+            <div class="label cpu-label">CPU</div>
+            <div class="label gpu-label">GPU</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <input id="speed" type="range" min="1" max="100" value="100" step="1">
+        <div class="speed-label">Speed: 100%</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        let cpuX = 50;
+        let gpuX = 50;
+        let cpuDirection = 1;
+        let gpuDirection = 1;
+
+        const SPEED_MULTIPLIER = 10;
+
+        // Reduce base speeds by 30%
+        let baseCpuSpeed = 42; // Reduced from 60
+        let baseGpuSpeed = 28; // Reduced from 40
+
+        const speedInput = document.getElementById('speed');
+        const speedLabel = document.querySelector('.speed-label');
+        let speedMultiplier = parseFloat(speedInput.value) / 100;
+
+        const taskRadios = document.querySelectorAll('input[name="task"]');
+        taskRadios.forEach(radio => {
+            radio.addEventListener('change', (event) => {
+                const selectedTask = event.target.value;
+                switch (selectedTask) {
+                    case 'compute':
+                        baseCpuSpeed = 42 * SPEED_MULTIPLIER; 
+                        baseGpuSpeed = 28 * SPEED_MULTIPLIER; 
+                        break;
+                    case 'render':
+                        baseCpuSpeed = 28 * SPEED_MULTIPLIER; 
+                        baseGpuSpeed = 56 * SPEED_MULTIPLIER; 
+                        break;
+                    case 'machine-learning':
+                        baseCpuSpeed = 14 * SPEED_MULTIPLIER; 
+                        baseGpuSpeed = 140 * SPEED_MULTIPLIER; 
+                        break;
+                    case 'video-encoding':
+                        baseCpuSpeed = 49 * SPEED_MULTIPLIER; 
+                        baseGpuSpeed = 35 * SPEED_MULTIPLIER; 
+                        break;
+                    case 'database':
+                        baseCpuSpeed = 63 * SPEED_MULTIPLIER; 
+                        baseGpuSpeed = 35 * SPEED_MULTIPLIER; 
+                        break;
+                    case 'gaming':
+                        baseCpuSpeed = 28 * SPEED_MULTIPLIER; 
+                        baseGpuSpeed = 84 * SPEED_MULTIPLIER; 
+                        break;
+                    case 'audio-processing':
+                        baseCpuSpeed = 49 * SPEED_MULTIPLIER; 
+                        baseGpuSpeed = 35 * SPEED_MULTIPLIER; 
+                        break;
+                    case 'cryptomining':
+                        baseCpuSpeed = 14 * SPEED_MULTIPLIER; 
+                        baseGpuSpeed = 70 * SPEED_MULTIPLIER; 
+                        break;
+                    case 'simulation':
+                        baseCpuSpeed = 28 * SPEED_MULTIPLIER; 
+                        baseGpuSpeed = 112 * SPEED_MULTIPLIER; 
+                        break;
+                }
+            });
+        });
+
+        speedInput.addEventListener('input', () => {
+            speedMultiplier = Math.pow(parseFloat(speedInput.value) / 100, 2); 
+            speedLabel.textContent = `Speed: ${speedInput.value}%`;
+        });
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(50, height / 4);
+            ctx.lineTo(width - 50, height / 4);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(50, (3 * height) / 4);
+            ctx.lineTo(width - 50, (3 * height) / 4);
+            ctx.stroke();
+
+            cpuX += cpuDirection * baseCpuSpeed * speedMultiplier;
+            if (cpuX >= width - 70 || cpuX <= 50) cpuDirection *= -1;
+
+            gpuX += gpuDirection * baseGpuSpeed * speedMultiplier;
+            if (gpuX >= width - 70 || gpuX <= 50) gpuDirection *= -1;
+
+            ctx.fillStyle = 'green';
+            ctx.beginPath();
+            ctx.arc(cpuX, height / 4, 10, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.arc(gpuX, (3 * height) / 4, 10, 0, 2 * Math.PI);
+            ctx.fill();
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
