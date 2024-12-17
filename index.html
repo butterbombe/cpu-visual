@@ -191,7 +191,7 @@
 
         speedInput.addEventListener('input', () => {
             speedMultiplier = Math.pow(parseFloat(speedInput.value) / 100, 2); 
-            speedLabel.textContent = `Speed: ${speedInput.value}%`;
+            speedLabel.textContent = `Speed: ${speedInput.value}% (refresh site if broken)`;
         });
 
         function draw() {
